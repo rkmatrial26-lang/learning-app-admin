@@ -9,6 +9,8 @@
     <style>
         .gradient-primary { background: linear-gradient(to right, #3B82F6, #2DD4BF); }
         .gradient-success { background: linear-gradient(to right, #22C55E, #14B8A6); }
+        #main-content > div { display: none; }
+        #main-content > div.active { display: block; }
     </style>
 </head>
 <body class="bg-gray-100">
@@ -28,47 +30,40 @@
         </div>
 
         <div id="admin-content" class="hidden">
-
-            <!-- NEW SECTION: Manage Subjects -->
-            <div id="manage-subjects-section" class="bg-white p-8 rounded-lg shadow-lg mb-8">
-                <h2 class="text-2xl font-semibold mb-6 border-b pb-4"><i class="fas fa-book mr-2 text-purple-500"></i>Manage Subjects</h2>
-                <form id="subject-form" class="space-y-4 mb-6">
-                    <input type="hidden" id="subject-id">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <input type="text" id="subject-name" placeholder="Subject Name (e.g., Science)" class="w-full p-3 border rounded-lg" required>
-                        <input type="text" id="subject-icon" placeholder="Font Awesome Icon (e.g., fa-flask)" class="w-full p-3 border rounded-lg">
-                        <input type="color" id="subject-color" class="w-full p-2 border rounded-lg h-[50px]" value="#4A90E2">
-                    </div>
-                    <div class="flex space-x-4">
-                        <button type="submit" class="w-full gradient-success text-white font-bold py-3 px-4 rounded-lg">Save Subject</button>
-                        <button type="button" onclick="resetSubjectForm()" class="w-full bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-4 rounded-lg">Cancel</button>
-                    </div>
-                </form>
-                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                    <select id="view-subjects-class" class="w-full p-3 border rounded-lg"></select>
-                    <select id="view-subjects-medium" class="w-full p-3 border rounded-lg">
-                        <option value="">Select Medium</option>
-                        <option value="English">English</option>
-                        <option value="Marathi">Marathi</option>
-                        <option value="Semi-English">Semi-English</option>
-                    </select>
+            <div id="main-content">
+                <div id="classes-view" class="active">
+                    <h2 class="text-2xl font-semibold mb-6"><i class="fas fa-school mr-2 text-indigo-500"></i>Select a Class</h2>
+                    <div id="class-cards-container" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                        </div>
                 </div>
-                <div id="subjects-list-container"></div>
-            </div>
 
-            <!-- Existing Section: Manage Lessons -->
-            <div id="add-edit-section" class="bg-white p-8 rounded-lg shadow-lg mb-8">
-                <h2 class="text-2xl font-semibold mb-6 border-b pb-4"><i class="fas fa-plus-circle mr-2 text-green-500"></i><span id="form-title">Add / Edit a Lesson</span></h2>
-                <form id="lesson-form" class="space-y-4"></form>
-            </div>
-            <div class="bg-white p-8 rounded-lg shadow-lg">
-                <h2 class="text-2xl font-semibold mb-6 border-b pb-4"><i class="fas fa-list-alt mr-2 text-blue-500"></i>Manage Existing Lessons</h2>
-                <div id="view-lessons-controls"></div>
-                <div id="lessons-list-container" class="mt-6"></div>
+                <div id="subjects-view">
+                    <button onclick="showClassesView()" class="mb-4 bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg"><i class="fas fa-arrow-left mr-2"></i>Back to Classes</button>
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-semibold"><i class="fas fa-book mr-2 text-purple-500"></i>Manage Subjects for <span id="class-name-for-subjects" class="font-bold"></span></h2>
+                        <button onclick="openSubjectModal()" class="gradient-success text-white font-bold py-2 px-4 rounded-lg"><i class="fas fa-plus mr-2"></i>Add Subject</button>
+                    </div>
+                    <div id="subjects-list-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        </div>
+                </div>
+                
+                <div id="lessons-view">
+                    <button onclick="showSubjectsView(currentClass)" class="mb-4 bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg"><i class="fas fa-arrow-left mr-2"></i>Back to Subjects</button>
+                    <div class="flex justify-between items-center mb-6">
+                         <h2 class="text-2xl font-semibold"><i class="fas fa-list-alt mr-2 text-blue-500"></i>Manage Lessons for <span id="subject-name-for-lessons" class="font-bold"></span></h2>
+                        <button onclick="openLessonModal()" class="gradient-success text-white font-bold py-2 px-4 rounded-lg"><i class="fas fa-plus mr-2"></i>Add Lesson</button>
+                    </div>
+                    <div id="lessons-list-container">
+                        </div>
+                </div>
             </div>
         </div>
     </div>
     
+    <div id="subject-modal" class="fixed inset-0 z-50 items-center justify-center hidden"><div class="absolute inset-0 bg-black bg-opacity-50"></div><div class="bg-white rounded-lg shadow-xl w-11/12 max-w-md p-6 relative"><h3 class="font-bold text-lg mb-4" id="subject-modal-title">Add Subject</h3><form id="subject-form"><input type="hidden" id="subject-id"><input type="text" id="subject-name" placeholder="Subject Name (e.g., Science)" class="w-full p-3 mb-4 border rounded-lg" required><input type="text" id="subject-icon" placeholder="Font Awesome Icon (e.g., fa-flask)" class="w-full p-3 mb-4 border rounded-lg"><div class="flex justify-end space-x-2"><button type="button" onclick="closeSubjectModal()" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg">Cancel</button><button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">Save</button></div></form></div></div>
+
+    <div id="lesson-modal" class="fixed inset-0 z-50 items-center justify-center hidden"><div class="absolute inset-0 bg-black bg-opacity-50"></div><div class="bg-white rounded-lg shadow-xl w-11/12 max-w-lg p-6 relative h-5/6 overflow-y-auto"><h3 class="font-bold text-lg mb-4" id="lesson-modal-title">Add Lesson</h3><form id="lesson-form" class="space-y-4"><input type="hidden" id="lesson-id"><input type="text" id="lesson-title" placeholder="Lesson/Chapter Title" class="w-full p-3 border rounded-lg" required><textarea id="lesson-notes" placeholder="Lesson Notes/Content" class="w-full p-3 border rounded-lg" rows="6"></textarea><div id="qna-container"><h3 class="text-lg font-semibold mt-4">Questions & Answers</h3></div><button type="button" onclick="addQnaPair()" class="mt-2 bg-gray-200 hover:bg-gray-300 font-bold py-2 px-4 rounded-lg"><i class="fas fa-plus mr-2"></i>Add Question</button><div class="flex justify-end space-x-2 mt-6"><button type="button" onclick="closeLessonModal()" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg">Cancel</button><button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">Save Lesson</button></div></form></div></div>
+
     <div id="delete-modal" class="fixed inset-0 z-50 items-center justify-center hidden"><div class="absolute inset-0 bg-black bg-opacity-50"></div><div class="bg-white rounded-lg shadow-xl w-11/12 max-w-md p-6 relative"><h3 class="font-bold text-lg">Confirm Deletion</h3><p id="delete-modal-text" class="py-4"></p><div class="flex justify-end space-x-2"><button id="cancel-delete-btn" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg">Cancel</button><button id="confirm-delete-btn" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg">Delete</button></div></div></div>
 
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
@@ -77,4 +72,3 @@
     <script src="admin_script.js"></script>
 </body>
 </html>
-
